@@ -13,6 +13,23 @@ class EntityRepo {
   static late final EntityDao entityDao;
   static late final RestClient client;
 
+  void backup() {
+    client.getDiscounted().asStream().flatMap((entities2) {
+      return entityDao
+          .getDiscounted()
+          .asStream()
+          .asyncMap((entities) async {
+        // Delete all entities from local storage
+        await entityDao.deleteAllEntities();
+
+        // Insert all entities from server into local storage
+        for (var entity in entities2) {
+          entityDao.addItem(entity);
+        }
+      });
+    });
+  }
+
   Stream<List<String?>> getCategories() {
     if (useLocal) {
       return entityDao
@@ -20,6 +37,7 @@ class EntityRepo {
           .asStream()
           .onErrorResume((error, stackTrace) => Stream.error(error.toString()));
     }
+    backup();
     return client
         .getCategories()
         .asStream()
@@ -46,6 +64,7 @@ class EntityRepo {
           .asStream()
           .onErrorResume((error, stackTrace) => Stream.error(error.toString()));
     }
+    backup();
     return client
         .getDiscounted()
         .asStream()
@@ -74,10 +93,13 @@ class EntityRepo {
     return Stream.error("No internet connection");
   }
 
-  Stream<String> updatePrice(int id) {
+  Stream<String> updatePrice(int id, double price) {
     if (hasInternet) {
       return client
-          .updatePrice(id)
+          .updatePrice(<String, dynamic>{
+            "id": id,
+            "price": price,
+          })
           .asStream()
           .flatMap((_) => Stream.value("ok"))
           .onErrorResume((error, stackTrace) => Stream.error(error.toString()));

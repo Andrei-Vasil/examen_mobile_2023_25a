@@ -122,7 +122,19 @@ class _MainScreenState extends State<MainScreen> {
                     .map((e) => EntityListTile(
                           entity: e,
                           onDelete: () {
-                            _viewModel.deleteItem(e.id!);
+                            _viewModel.deleteItem(e.id!).first.then((_) {
+                              Utils.displayMessage(
+                                context,
+                                'Success on delete',
+                              );
+                              setState(() {});
+                            }).onError((error, stackTrace) {
+                              Utils.displayError(
+                                context,
+                                'Error on delete.',
+                              );
+                              setState(() {});
+                            });
                           },
                         ))
                     .toList(),

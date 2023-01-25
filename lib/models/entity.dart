@@ -11,7 +11,7 @@ class Item {
   int? id;
   String? name;
   String? description;
-  String? imageName;
+  String? image;
   String? category;
   int? units;
   double? price;
@@ -20,7 +20,7 @@ class Item {
     this.id,
     this.name,
     this.description,
-    this.imageName,
+    this.image,
     this.category,
     this.units,
     this.price,

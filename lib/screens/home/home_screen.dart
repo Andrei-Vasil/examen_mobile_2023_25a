@@ -25,14 +25,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       Future.delayed(const Duration(milliseconds: 300)).then((_) => showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                title: const Text("A new game was added!"),
+                title: const Text("A new item was added!"),
                 content: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(entity.name ?? ""),
                     Text(entity.description ?? ""),
-                    Text(entity.imageName ?? ""),
+                    Text(entity.image ?? ""),
                     Text(entity.category ?? ""),
                     Text(entity.units.toString()),
                     Text(entity.price.toString()),

@@ -52,18 +52,20 @@ class _PriceScreenState extends State<PriceScreen> {
                     children: snapshot2.data!
                         .map((e) => EntityListTile(
                             entity: e,
-                            onBorrow: () {
+                            onInc: () {
                               if (e.id != null) {
-                                _viewModel.updatePrice(e.id!);
-                                Utils.displayError(
+                                _viewModel.updatePrice(e.id!, e.price! + 1);
+                                Utils.displayMessage(
                                   context,
                                   'Success on price increment',
                                 );
+                                setState(() {});
                               } else {
                                 Utils.displayError(
                                   context,
                                   'Error on price increment.',
                                 );
+                                setState(() {});
                               }
                             }))
                         .toList(),

@@ -85,7 +85,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Item` (`id` INTEGER, `name` TEXT, `description` TEXT, `imageName` TEXT, `category` TEXT, `units` INTEGER, `price` REAL, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Item` (`id` INTEGER, `name` TEXT, `description` TEXT, `image` TEXT, `category` TEXT, `units` INTEGER, `price` REAL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -111,7 +111,7 @@ class _$EntityDao extends EntityDao {
                   'id': item.id,
                   'name': item.name,
                   'description': item.description,
-                  'imageName': item.imageName,
+                  'image': item.image,
                   'category': item.category,
                   'units': item.units,
                   'price': item.price
@@ -124,7 +124,7 @@ class _$EntityDao extends EntityDao {
                   'id': item.id,
                   'name': item.name,
                   'description': item.description,
-                  'imageName': item.imageName,
+                  'image': item.image,
                   'category': item.category,
                   'units': item.units,
                   'price': item.price
@@ -137,7 +137,7 @@ class _$EntityDao extends EntityDao {
                   'id': item.id,
                   'name': item.name,
                   'description': item.description,
-                  'imageName': item.imageName,
+                  'image': item.image,
                   'category': item.category,
                   'units': item.units,
                   'price': item.price
@@ -162,7 +162,7 @@ class _$EntityDao extends EntityDao {
             id: row['id'] as int?,
             name: row['name'] as String?,
             description: row['description'] as String?,
-            imageName: row['imageName'] as String?,
+            image: row['image'] as String?,
             category: row['category'] as String?,
             units: row['units'] as int?,
             price: row['price'] as double?),
@@ -176,7 +176,7 @@ class _$EntityDao extends EntityDao {
             id: row['id'] as int?,
             name: row['name'] as String?,
             description: row['description'] as String?,
-            imageName: row['imageName'] as String?,
+            image: row['image'] as String?,
             category: row['category'] as String?,
             units: row['units'] as int?,
             price: row['price'] as double?));

@@ -118,20 +118,21 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Item> updatePrice(id) async {
+  Future<Item> updatePrice(entity) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
+    _data.addAll(entity);
     final _result =
         await _dio.fetch<Map<String, dynamic>>(_setStreamType<Item>(Options(
-      method: 'PUT',
+      method: 'POST',
       headers: _headers,
       extra: _extra,
     )
             .compose(
               _dio.options,
-              '/price/${id}',
+              '/price',
               queryParameters: queryParameters,
               data: _data,
             )

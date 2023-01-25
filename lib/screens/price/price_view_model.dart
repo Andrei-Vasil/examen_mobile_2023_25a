@@ -14,7 +14,7 @@ class PriceViewModel {
       .then((items) => getTop10Discounted(items))
       .asStream();
 
-  Stream<String> updatePrice(int id) => _repo.updatePrice(id);
+  Stream<String> updatePrice(int id, double price) => _repo.updatePrice(id, price);
 
   List<Item> getTop10Discounted(List<Item> entities) {
     entities.sort((p1, p2) {

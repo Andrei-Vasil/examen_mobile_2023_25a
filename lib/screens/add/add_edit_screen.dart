@@ -43,15 +43,13 @@ class _AddEditScreenState extends State<AddEditScreen> {
     );
     _imageDescriptor = TextFieldDescriptor(
       controller: TextEditingController()
-        ..text = widget.entityToUpdate?.imageName ?? "",
+        ..text = widget.entityToUpdate?.image ?? "",
       decoration: _getDecoration("Image"),
-      numericInput: true,
     );
     _categoryDescriptor = TextFieldDescriptor(
       controller: TextEditingController()
         ..text = widget.entityToUpdate?.category ?? "",
       decoration: _getDecoration("Category"),
-      numericInput: true,
     );
     _unitsDescriptor = TextFieldDescriptor(
       controller: TextEditingController()
@@ -114,17 +112,18 @@ class _AddEditScreenState extends State<AddEditScreen> {
           if (response == "ok") {
             Navigator.of(context).pop();
           } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Utils.displayError(context, response.toString());
-            });
+            Utils.displayError(context, "something went wrong");
+            // WidgetsBinding.instance.addPostFrameCallback((_) {
+            //   Utils.displayError(context, response.toString());
+            // });
           }
         }
 
-        var plane = Item(
+        var item = Item(
           id: _isInEditMode ? widget.entityToUpdate!.id : null,
           name: _nameDescriptor.controller.text,
           description: _descriptionDescriptor.controller.text,
-          imageName: _imageDescriptor.controller.text,
+          image: _imageDescriptor.controller.text,
           category: _categoryDescriptor.controller.text,
           units: _unitsDescriptor.controller.text.isNotEmpty
               ? int.parse(_unitsDescriptor.controller.text)
@@ -135,9 +134,9 @@ class _AddEditScreenState extends State<AddEditScreen> {
         );
 
         if (_isInEditMode) {
-          _subscription = _viewModel.updateEntity(plane).listen(listener);
+          _subscription = _viewModel.updateEntity(item).listen(listener);
         } else {
-          _subscription = _viewModel.addEntity(plane).listen(listener);
+          _subscription = _viewModel.addEntity(item).listen(listener);
         }
       };
 

@@ -33,6 +33,20 @@ class Utils {
     );
   }
 
+  static void displayMessage(BuildContext context, String error) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+          title: const Text("Special message just 4 u"),
+          content: Text(error),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("OK")),
+          ]),
+    );
+  }
+
   static Widget checkInternetScreenWrapper({
     required Widget child,
     required VoidCallback onRetry,

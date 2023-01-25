@@ -6,7 +6,7 @@ import '../../../theme/app_colors.dart';
 class EntityListTile extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
-  final VoidCallback? onBorrow;
+  final VoidCallback? onInc;
   final Item entity;
 
   const EntityListTile({
@@ -14,7 +14,7 @@ class EntityListTile extends StatelessWidget {
     required this.entity,
     this.onEdit,
     this.onDelete,
-    this.onBorrow,
+    this.onInc,
   }) : super(key: key);
 
   @override
@@ -32,11 +32,11 @@ class EntityListTile extends StatelessWidget {
               color: Colors.white70, fontWeight: FontWeight.bold),
         ),
         trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-          if (onBorrow != null)
+          if (onInc != null)
             IconButton(
-              onPressed: onBorrow,
+              onPressed: onInc,
               icon: const Icon(
-                Icons.handshake,
+                Icons.arrow_upward,
                 color: Colors.white,
               ),
             ),
@@ -70,8 +70,9 @@ class EntityListTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(entity.description ?? ""),
-                      Text(entity.units.toString()),
+                      Text(entity.image ?? ""),
                       Text(entity.category ?? ""),
+                      Text(entity.units.toString()),
                       Text(entity.price.toString()),
                     ],
                   ),

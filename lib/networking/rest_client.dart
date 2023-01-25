@@ -20,8 +20,8 @@ abstract class RestClient {
   @POST("/item")
   Future<Item> postItem(@Body() Item item);
 
-  @PUT("/price/{id}")
-  Future<Item> updatePrice(@Path() int id);
+  @POST("/price")
+  Future<Item> updatePrice(@Body() Map<String, dynamic> entity);
 
   @DELETE("/item/{id}")
   Future<Item> deleteItem(@Path() int id);
