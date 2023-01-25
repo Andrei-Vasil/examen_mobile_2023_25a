@@ -146,7 +146,7 @@ class _MainScreenState extends State<MainScreen> {
           style: TextStyle(fontSize: 30, color: Colors.black54),
         ),
         actions: [
-          if (!EntityRepo.useLocal)
+          if (EntityRepo.hasInternet)
             IconButton(
               onPressed: () => Navigator.of(context)
                   .push(MaterialPageRoute(
