@@ -13,12 +13,9 @@ class EntityRepo {
   static late final EntityDao entityDao;
   static late final RestClient client;
 
-  void backup() {
-    client.getDiscounted().asStream().flatMap((entities2) {
-      return entityDao
-          .getDiscounted()
-          .asStream()
-          .asyncMap((entities) async {
+  Future<bool> backup() {
+    return client.getDiscounted().asStream().flatMap((entities2) {
+      return entityDao.getDiscounted().asStream().asyncMap((entities) async {
         // Delete all entities from local storage
         await entityDao.deleteAllEntities();
 
@@ -26,8 +23,9 @@ class EntityRepo {
         for (var entity in entities2) {
           entityDao.addItem(entity);
         }
+        return true;
       });
-    });
+    }).first;
   }
 
   Stream<List<String?>> getCategories() {
@@ -37,9 +35,10 @@ class EntityRepo {
           .asStream()
           .onErrorResume((error, stackTrace) => Stream.error(error.toString()));
     }
-    backup();
-    return client
-        .getCategories()
+    return backup()
+        .then((_) {
+          return client.getCategories();
+        })
         .asStream()
         .onErrorResume((error, stackTrace) => Stream.error(error.toString()));
   }
@@ -64,9 +63,10 @@ class EntityRepo {
           .asStream()
           .onErrorResume((error, stackTrace) => Stream.error(error.toString()));
     }
-    backup();
-    return client
-        .getDiscounted()
+    return backup()
+        .then((_) {
+          return client.getDiscounted();
+        })
         .asStream()
         .onErrorResume((error, stackTrace) => Stream.error(error.toString()));
   }
