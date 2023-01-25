@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_albums_flutter/repo/entity_repo.dart';
 
 import '../../../models/entity.dart';
 import '../../../theme/app_colors.dart';
@@ -48,7 +49,7 @@ class EntityListTile extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-          if (onDelete != null)
+          if (onDelete != null && !EntityRepo.useLocal)
             IconButton(
               onPressed: onDelete,
               icon: const Icon(

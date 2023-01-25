@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:my_albums_flutter/repo/shared_pref_repo.dart';
 import 'package:my_albums_flutter/screens/add/add_edit_screen.dart';
 import 'package:my_albums_flutter/screens/main/main_view_model.dart';
 import 'package:my_albums_flutter/theme/app_colors.dart';
@@ -147,15 +146,16 @@ class _MainScreenState extends State<MainScreen> {
           style: TextStyle(fontSize: 30, color: Colors.black54),
         ),
         actions: [
-          IconButton(
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(
-                    builder: (BuildContext context) => const AddEditScreen()))
-                .then((_) {
-              setState(() {});
-            }),
-            icon: const Icon(Icons.add_circle, color: Colors.black54),
-          ),
+          if (!EntityRepo.useLocal)
+            IconButton(
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(
+                      builder: (BuildContext context) => const AddEditScreen()))
+                  .then((_) {
+                setState(() {});
+              }),
+              icon: const Icon(Icons.add_circle, color: Colors.black54),
+            ),
           if (EntityRepo.useLocal)
             IconButton(
               onPressed: () => setState(() {

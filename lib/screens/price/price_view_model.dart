@@ -1,5 +1,3 @@
-import 'package:my_albums_flutter/repo/shared_pref_repo.dart';
-
 import '../../models/entity.dart';
 import '../../repo/entity_repo.dart';
 

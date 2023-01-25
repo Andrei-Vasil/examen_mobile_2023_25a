@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_albums_flutter/repo/shared_pref_repo.dart';
 import 'package:my_albums_flutter/screens/price/price_view_model.dart';
 
 import '../../models/entity.dart';

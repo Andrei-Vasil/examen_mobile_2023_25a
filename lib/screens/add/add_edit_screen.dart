@@ -112,10 +112,9 @@ class _AddEditScreenState extends State<AddEditScreen> {
           if (response == "ok") {
             Navigator.of(context).pop();
           } else {
-            Utils.displayError(context, "something went wrong");
-            // WidgetsBinding.instance.addPostFrameCallback((_) {
-            //   Utils.displayError(context, response.toString());
-            // });
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              Utils.displayError(context, response.toString());
+            });
           }
         }
 
