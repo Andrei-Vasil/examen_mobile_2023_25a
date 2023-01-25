@@ -13,7 +13,7 @@ class _RestClient implements RestClient {
     this._dio, {
     this.baseUrl,
   }) {
-    baseUrl ??= 'http://192.168.1.4:2502';
+    baseUrl ??= 'http://192.168.43.164:2325';
   }
 
   final Dio _dio;
@@ -21,7 +21,7 @@ class _RestClient implements RestClient {
   String? baseUrl;
 
   @override
-  Future<List<Item>> getItems() async {
+  Future<List<Item>> getItemsForCategory(category) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -34,7 +34,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/allGames',
+              '/items/${category}',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -46,55 +46,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<Item>> getEntitiesForUser(user) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result =
-        await _dio.fetch<List<dynamic>>(_setStreamType<List<Item>>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/games/${user}',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    var value = _result.data!
-        .map((dynamic i) => Item.fromJson(i as Map<String, dynamic>))
-        .toList();
-    return value;
-  }
-
-  @override
-  Future<Item> getEntity(id) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    final _result =
-        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Item>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/planes/${id}',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = Item.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<List<String>> getTypes() async {
+  Future<List<String>> getCategories() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -107,7 +59,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/manufacturers',
+              '/categories',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -117,7 +69,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<Item>> getEntitiesForType(type) async {
+  Future<List<Item>> getDiscounted() async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -130,7 +82,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/manufacturers/${type}',
+              '/discounted',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -142,37 +94,12 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<List<Item>> getAvailableEntities() async {
+  Future<Item> postItem(item) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    final _result =
-        await _dio.fetch<List<dynamic>>(_setStreamType<List<Item>>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/ready',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    var value = _result.data!
-        .map((dynamic i) => Item.fromJson(i as Map<String, dynamic>))
-        .toList();
-    return value;
-  }
-
-  @override
-  Future<Item> postEntity(game) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(game.toJson());
+    _data.addAll(item.toJson());
     final _result =
         await _dio.fetch<Map<String, dynamic>>(_setStreamType<Item>(Options(
       method: 'POST',
@@ -181,7 +108,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/game',
+              '/item',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -191,39 +118,11 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Item> borrowGame(gameIdAndUserName) async {
+  Future<Item> updatePrice(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
-    _data.addAll(gameIdAndUserName);
-    final _result =
-        await _dio.fetch<Map<String, dynamic>>(_setStreamType<Item>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-            .compose(
-              _dio.options,
-              '/book',
-              queryParameters: queryParameters,
-              data: _data,
-            )
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = Item.fromJson(_result.data!);
-    return value;
-  }
-
-  @override
-  Future<Item> putEntity(
-    id,
-    game,
-  ) async {
-    const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(game.toJson());
     final _result =
         await _dio.fetch<Map<String, dynamic>>(_setStreamType<Item>(Options(
       method: 'PUT',
@@ -232,7 +131,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/planes/${id}',
+              '/price/${id}',
               queryParameters: queryParameters,
               data: _data,
             )
@@ -242,7 +141,7 @@ class _RestClient implements RestClient {
   }
 
   @override
-  Future<Item> deleteEntity(id) async {
+  Future<Item> deleteItem(id) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
@@ -255,7 +154,7 @@ class _RestClient implements RestClient {
     )
             .compose(
               _dio.options,
-              '/planes/${id}',
+              '/item/${id}',
               queryParameters: queryParameters,
               data: _data,
             )

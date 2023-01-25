@@ -4,25 +4,25 @@ import 'package:dio/dio.dart' show Dio, Options, RequestOptions, ResponseType;
 
 part 'rest_client.g.dart';
 
-@RestApi(baseUrl: "http://192.168.1.4:2325")
+@RestApi(baseUrl: "http://192.168.43.164:2325")
 abstract class RestClient {
   factory RestClient(Dio dio) = _RestClient;
 
-  @GET("/items")
-  Future<List<Item>> getItems();
+  @GET("/items/{category}")
+  Future<List<Item>> getItemsForCategory(@Path() String category);
 
   @GET("/categories")
   Future<List<String>> getCategories();
 
   @GET("/discounted")
-  Future<Item> getDiscounted();
+  Future<List<Item>> getDiscounted();
 
   @POST("/item")
-  Future<Item> postEntity(@Body() Item item);
+  Future<Item> postItem(@Body() Item item);
 
   @PUT("/price/{id}")
-  Future<Item> putEntity(@Path() int id);
+  Future<Item> updatePrice(@Path() int id);
 
   @DELETE("/item/{id}")
-  Future<Item> deleteEntity(@Path() int id);
+  Future<Item> deleteItem(@Path() int id);
 }

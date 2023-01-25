@@ -1,43 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:my_albums_flutter/repo/shared_pref_repo.dart';
-import 'package:my_albums_flutter/screens/selection/selection_view_model.dart';
+import 'package:my_albums_flutter/screens/price/price_view_model.dart';
 
 import '../../models/entity.dart';
 import '../../repo/entity_repo.dart';
 import '../../utils.dart';
 import '../../widgets/entity_list_tile.dart';
 
-class SelectionScreen extends StatefulWidget {
-  const SelectionScreen({Key? key}) : super(key: key);
+class PriceScreen extends StatefulWidget {
+  const PriceScreen({Key? key}) : super(key: key);
 
   @override
-  State<SelectionScreen> createState() => _SelectionScreenState();
+  State<PriceScreen> createState() => _PriceScreenState();
 }
 
-class _SelectionScreenState extends State<SelectionScreen> {
-  final SelectionViewModel _viewModel = SelectionViewModel(
+class _PriceScreenState extends State<PriceScreen> {
+  final PriceViewModel _viewModel = PriceViewModel(
     EntityRepo(),
-    SharedPrefsRepo(),
   );
-  String? userName;
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-        stream: _viewModel.getUserName(),
-        builder: (context, snapshot) {
-          userName = snapshot.data;
-          return Scaffold(
-            appBar: _appBar,
-            body: _screen,
-          );
-        });
+    return Scaffold(
+      appBar: _appBar,
+      body: _screen,
+    );
   }
 
   AppBar get _appBar => AppBar(
-        title: Text(
-          "Selection $userName",
-          style: const TextStyle(fontSize: 30, color: Colors.black54),
+        title: const Text(
+          "Price",
+          style: TextStyle(fontSize: 30, color: Colors.black54),
         ),
       );
 
@@ -45,7 +38,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
     return Utils.checkInternetScreenWrapper(
       onRetry: () => setState(() {}),
       child: StreamBuilder<List<Item>>(
-          stream: _viewModel.getAvailableGames(),
+          stream: _viewModel.getDiscounted(),
           builder: (context, snapshot2) {
             if (snapshot2.error != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -60,19 +53,16 @@ class _SelectionScreenState extends State<SelectionScreen> {
                         .map((e) => EntityListTile(
                             entity: e,
                             onBorrow: () {
-                              if (userName != null && e.id != null) {
-                                _viewModel.borrowGame(
-                                  e.id!,
-                                  userName!,
-                                );
+                              if (e.id != null) {
+                                _viewModel.updatePrice(e.id!);
                                 Utils.displayError(
                                   context,
-                                  'Game\'s been borrowed',
+                                  'Success on price increment',
                                 );
                               } else {
                                 Utils.displayError(
                                   context,
-                                  'User or book id is null $userName ${e.toJson().toString()}',
+                                  'Error on price increment.',
                                 );
                               }
                             }))

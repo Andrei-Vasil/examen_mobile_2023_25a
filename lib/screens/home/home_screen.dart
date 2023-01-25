@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:my_albums_flutter/screens/home/home_view_model.dart';
-import 'package:my_albums_flutter/screens/selection/selection_screen.dart';
+import 'package:my_albums_flutter/screens/price/price_screen.dart';
 
 import '../../utils.dart';
 import '../main/main_screen.dart';
-import '../status/status_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,8 +21,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    /// Listening for added games on server, and showing a popup
-    _subscription = _viewModel.listenForAddedPlanes().listen((entity) {
+    _subscription = _viewModel.listenForAddedItems().listen((entity) {
       Future.delayed(const Duration(milliseconds: 300)).then((_) => showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -34,8 +32,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                   children: [
                     Text(entity.name ?? ""),
                     Text(entity.description ?? ""),
-                    Text(entity.units.toString()),
+                    Text(entity.imageName ?? ""),
                     Text(entity.category ?? ""),
+                    Text(entity.units.toString()),
                     Text(entity.price.toString()),
                   ],
                 ),
@@ -68,11 +67,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       case 0:
         return const MainScreen();
       case 1:
-        return const SelectionScreen();
-      case 2:
-        return const StatusScreen();
+        return const PriceScreen();
       default:
-        return const SelectionScreen();
+        return const PriceScreen();
     }
   }
 
@@ -90,10 +87,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           BottomNavigationBarItem(
             icon: Icon(Icons.format_list_bulleted),
             label: 'Manage',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.leaderboard_outlined),
-            label: 'Report',
           ),
         ],
         currentIndex: _selectedTabIndex,

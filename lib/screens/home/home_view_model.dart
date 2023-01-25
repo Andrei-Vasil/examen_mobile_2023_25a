@@ -7,10 +7,10 @@ import '../../models/entity.dart';
 class HomeViewModel {
   final _channel = WebSocketChannel.connect(
     // TODO change the uri
-    Uri.parse('ws://192.168.1.4:2325'),
+    Uri.parse('ws://192.168.43.164:2325'),
   );
 
-  Stream<Item> listenForAddedPlanes() {
+  Stream<Item> listenForAddedItems() {
     return _channel.stream.flatMap((value) {
       if (value is! String) {
         return Stream.error("The received value has the wrong type!");

@@ -85,7 +85,7 @@ class _$AppDatabase extends AppDatabase {
       },
       onCreate: (database, version) async {
         await database.execute(
-            'CREATE TABLE IF NOT EXISTS `Game` (`id` INTEGER, `name` TEXT, `status` TEXT, `size` INTEGER, `main` TEXT, `popularityScore` INTEGER, PRIMARY KEY (`id`))');
+            'CREATE TABLE IF NOT EXISTS `Item` (`id` INTEGER, `name` TEXT, `description` TEXT, `imageName` TEXT, `category` TEXT, `units` INTEGER, `price` REAL, PRIMARY KEY (`id`))');
 
         await callback?.onCreate?.call(database, version);
       },
@@ -104,40 +104,43 @@ class _$EntityDao extends EntityDao {
     this.database,
     this.changeListener,
   )   : _queryAdapter = QueryAdapter(database),
-        _gameInsertionAdapter = InsertionAdapter(
+        _itemInsertionAdapter = InsertionAdapter(
             database,
-            'Game',
+            'Item',
             (Item item) => <String, Object?>{
                   'id': item.id,
                   'name': item.name,
-                  'status': item.description,
-                  'size': item.units,
-                  'main': item.category,
-                  'popularityScore': item.price
+                  'description': item.description,
+                  'imageName': item.imageName,
+                  'category': item.category,
+                  'units': item.units,
+                  'price': item.price
                 }),
-        _gameUpdateAdapter = UpdateAdapter(
+        _itemUpdateAdapter = UpdateAdapter(
             database,
-            'Game',
+            'Item',
             ['id'],
             (Item item) => <String, Object?>{
                   'id': item.id,
                   'name': item.name,
-                  'status': item.description,
-                  'size': item.units,
-                  'main': item.category,
-                  'popularityScore': item.price
+                  'description': item.description,
+                  'imageName': item.imageName,
+                  'category': item.category,
+                  'units': item.units,
+                  'price': item.price
                 }),
-        _gameDeletionAdapter = DeletionAdapter(
+        _itemDeletionAdapter = DeletionAdapter(
             database,
-            'Game',
+            'Item',
             ['id'],
             (Item item) => <String, Object?>{
                   'id': item.id,
                   'name': item.name,
-                  'status': item.description,
-                  'size': item.units,
-                  'main': item.category,
-                  'popularityScore': item.price
+                  'description': item.description,
+                  'imageName': item.imageName,
+                  'category': item.category,
+                  'units': item.units,
+                  'price': item.price
                 });
 
   final sqflite.DatabaseExecutor database;
@@ -146,54 +149,62 @@ class _$EntityDao extends EntityDao {
 
   final QueryAdapter _queryAdapter;
 
-  final InsertionAdapter<Item> _gameInsertionAdapter;
+  final InsertionAdapter<Item> _itemInsertionAdapter;
 
-  final UpdateAdapter<Item> _gameUpdateAdapter;
+  final UpdateAdapter<Item> _itemUpdateAdapter;
 
-  final DeletionAdapter<Item> _gameDeletionAdapter;
+  final DeletionAdapter<Item> _itemDeletionAdapter;
 
   @override
-  Future<List<Item>> findAllEntities() async {
-    return _queryAdapter.queryList('SELECT * FROM Game',
+  Future<List<Item>> getItemsForCategory(String category) async {
+    return _queryAdapter.queryList('SELECT * FROM Item WHERE category = ?1',
         mapper: (Map<String, Object?> row) => Item(
             id: row['id'] as int?,
             name: row['name'] as String?,
-            description: row['status'] as String?,
-            units: row['size'] as int?,
-            category: row['main'] as String?,
-            price: row['popularityScore'] as int?));
+            description: row['description'] as String?,
+            imageName: row['imageName'] as String?,
+            category: row['category'] as String?,
+            units: row['units'] as int?,
+            price: row['price'] as double?),
+        arguments: [category]);
   }
 
   @override
-  Future<Item?> findEntityById(String id) async {
-    return _queryAdapter.query('SELECT * FROM Game WHERE id = ?1',
+  Future<List<Item>> getDiscounted() async {
+    return _queryAdapter.queryList('SELECT * FROM Item',
         mapper: (Map<String, Object?> row) => Item(
             id: row['id'] as int?,
             name: row['name'] as String?,
-            description: row['status'] as String?,
-            units: row['size'] as int?,
-            category: row['main'] as String?,
-            price: row['popularityScore'] as int?),
-        arguments: [id]);
+            description: row['description'] as String?,
+            imageName: row['imageName'] as String?,
+            category: row['category'] as String?,
+            units: row['units'] as int?,
+            price: row['price'] as double?));
   }
 
   @override
   Future<void> deleteAllEntities() async {
-    await _queryAdapter.queryNoReturn('DELETE FROM Game');
+    await _queryAdapter.queryNoReturn('DELETE FROM Item');
   }
 
   @override
-  Future<void> insertEntity(Item entity) async {
-    await _gameInsertionAdapter.insert(entity, OnConflictStrategy.abort);
+  Future<List<String>> getCategories() async {
+    return _queryAdapter.queryList('SELECT DISTINCT category FROM Item',
+        mapper: (Map<String, Object?> row) => row.values.first as String);
+  }
+
+  @override
+  Future<void> addItem(Item entity) async {
+    await _itemInsertionAdapter.insert(entity, OnConflictStrategy.abort);
   }
 
   @override
   Future<void> updateEntity(Item entity) async {
-    await _gameUpdateAdapter.update(entity, OnConflictStrategy.abort);
+    await _itemUpdateAdapter.update(entity, OnConflictStrategy.abort);
   }
 
   @override
   Future<void> deleteEntity(Item entity) async {
-    await _gameDeletionAdapter.delete(entity);
+    await _itemDeletionAdapter.delete(entity);
   }
 }

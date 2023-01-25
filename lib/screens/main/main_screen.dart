@@ -5,6 +5,7 @@ import 'package:my_albums_flutter/repo/shared_pref_repo.dart';
 import 'package:my_albums_flutter/screens/add/add_edit_screen.dart';
 import 'package:my_albums_flutter/screens/main/main_view_model.dart';
 import 'package:my_albums_flutter/theme/app_colors.dart';
+import 'package:my_albums_flutter/widgets/category_list_tile.dart';
 
 import '../../repo/entity_repo.dart';
 import '../../utils.dart';
@@ -18,10 +19,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  final MainViewModel _viewModel =
-      MainViewModel(SharedPrefsRepo(), EntityRepo());
+  final MainViewModel _viewModel = MainViewModel(EntityRepo());
   final TextEditingController _textEditingController = TextEditingController();
-  StreamSubscription? _subscription;
+  String? selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -32,75 +32,68 @@ class _MainScreenState extends State<MainScreen> {
   }
 
   Widget get _screen => SingleChildScrollView(
-        child: StreamBuilder(
-            stream: _viewModel.getUserName(),
-            builder: (context, snapshot) {
-              return snapshot.connectionState == ConnectionState.waiting
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : Utils.checkInternetScreenWrapper(
-                      onRetry: () => setState(() {}),
-                      onUseLocal: () => setState(() {
-                        EntityRepo.useLocal = true;
-                      }),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Center(
-                              child: Icon(
-                            Icons.account_circle,
-                            size: 200,
-                          )),
-                          Text(
-                            snapshot.data == null
-                                ? "User name is not set!"
-                                : snapshot.data!,
-                            style: const TextStyle(
-                                color: Colors.white70,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24),
-                          ),
-                          TextField(
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.zero,
-                              labelStyle: const TextStyle(color: Colors.grey),
-                              suffix: IconButton(
-                                onPressed: _onSave,
-                                icon: const Icon(
-                                  Icons.check,
-                                  color: AppColors.primaryColor,
-                                ),
-                              ),
-                            ),
-                            controller: _textEditingController,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          if (snapshot.data != null) ...[
-                            Text(
-                              "${snapshot.data}'s games:",
-                              style: const TextStyle(
-                                  color: Colors.white70,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18),
-                            ),
-                            const SizedBox(
-                              height: 25,
-                            ),
-                            _userGamesWidget(snapshot.data!)
-                          ]
-                        ],
-                      ),
-                    );
-            }),
+        child: Utils.checkInternetScreenWrapper(
+          onRetry: () => setState(() {}),
+          onUseLocal: () => setState(() {
+            EntityRepo.useLocal = true;
+          }),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _categoriesWidget(),
+              const Divider(
+                color: Colors.white70,
+                thickness: 2,
+              ),
+              const SizedBox(height: 10),
+              Text(
+                selectedCategory == null
+                    ? "Category not selected!"
+                    : selectedCategory!,
+                style: const TextStyle(
+                    color: Colors.white70,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24),
+              ),
+              TextField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.zero,
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  suffix: IconButton(
+                    onPressed: _onSave,
+                    icon: const Icon(
+                      Icons.check,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ),
+                controller: _textEditingController,
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+              if (selectedCategory != null) ...[
+                Text(
+                  "Items of category ${selectedCategory!}:",
+                  style: const TextStyle(
+                      color: Colors.white70,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18),
+                ),
+                const SizedBox(
+                  height: 25,
+                ),
+                _categoryItemsWidget(selectedCategory!)
+              ]
+            ],
+          ),
+        ),
       );
 
-  Widget _userGamesWidget(String owner) => StreamBuilder(
-      stream: _viewModel.getUserGames(owner),
+  Widget _categoriesWidget() => StreamBuilder(
+      stream: _viewModel.getCategories(),
       builder: (context2, snapshot2) {
         return snapshot2.connectionState == ConnectionState.waiting
             ? const Center(
@@ -110,34 +103,47 @@ class _MainScreenState extends State<MainScreen> {
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 children: snapshot2.data!
-                    .map((e) => EntityListTile(entity: e))
+                    .map((e) => CategoryListTile(category: e))
+                    .toList(),
+              );
+      });
+
+  Widget _categoryItemsWidget(String category) => StreamBuilder(
+      stream: _viewModel.getItemsForCategory(category),
+      builder: (context2, snapshot2) {
+        return snapshot2.connectionState == ConnectionState.waiting
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
+            : ListView(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                children: snapshot2.data!
+                    .map((e) => EntityListTile(
+                          entity: e,
+                          onDelete: () {
+                            _viewModel.deleteItem(e.id!);
+                          },
+                        ))
                     .toList(),
               );
       });
 
   AppBar get _appBar => AppBar(
         title: const Text(
-          "User",
+          "Main",
           style: TextStyle(fontSize: 30, color: Colors.black54),
         ),
         actions: [
-          StreamBuilder(
-              stream: _viewModel.getUserName(),
-              builder: (context, snapshot) {
-                if (snapshot.data == null) {
-                  return Container();
-                }
-                return IconButton(
-                  onPressed: () => Navigator.of(context)
-                      .push(MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              AddEditScreen(userName: snapshot.data!)))
-                      .then((_) {
-                    setState(() {});
-                  }),
-                  icon: const Icon(Icons.add_circle, color: Colors.black54),
-                );
-              }),
+          IconButton(
+            onPressed: () => Navigator.of(context)
+                .push(MaterialPageRoute(
+                    builder: (BuildContext context) => const AddEditScreen()))
+                .then((_) {
+              setState(() {});
+            }),
+            icon: const Icon(Icons.add_circle, color: Colors.black54),
+          ),
           if (EntityRepo.useLocal)
             IconButton(
               onPressed: () => setState(() {
@@ -149,24 +155,14 @@ class _MainScreenState extends State<MainScreen> {
       );
 
   VoidCallback get _onSave => () {
-        _subscription =
-            _viewModel.setUserName(_textEditingController.text).listen((event) {
-          if (!event) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Utils.displayError(
-                  context, "There was an error setting the name!");
-            });
-          } else {
-            setState(() {
-              _textEditingController.clear();
-            });
-          }
+        selectedCategory = _textEditingController.text;
+        setState(() {
+          _textEditingController.clear();
         });
       };
 
   @override
   void dispose() {
-    _subscription?.cancel();
     _textEditingController.dispose();
     super.dispose();
   }

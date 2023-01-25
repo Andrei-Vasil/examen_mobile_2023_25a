@@ -1,7 +1,5 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart';import 'package:floor/floor.dart';
-
+import 'package:flutter/material.dart';
 import 'package:my_albums_flutter/models/entity.dart';
 import 'package:my_albums_flutter/repo/entity_repo.dart';
 
@@ -21,9 +19,11 @@ class AddEditScreen extends StatefulWidget {
 class _AddEditScreenState extends State<AddEditScreen> {
   final AddEditViewModel _viewModel = AddEditViewModel(EntityRepo());
   late TextFieldDescriptor _nameDescriptor;
-  late TextFieldDescriptor _statusDescriptor;
-  late TextFieldDescriptor _sizeDescriptor;
-  late TextFieldDescriptor _popScoreDescriptor;
+  late TextFieldDescriptor _descriptionDescriptor;
+  late TextFieldDescriptor _imageDescriptor;
+  late TextFieldDescriptor _categoryDescriptor;
+  late TextFieldDescriptor _unitsDescriptor;
+  late TextFieldDescriptor _priceDescriptor;
   late bool _isInEditMode;
   StreamSubscription? _subscription;
 
@@ -36,21 +36,33 @@ class _AddEditScreenState extends State<AddEditScreen> {
         ..text = widget.entityToUpdate?.name ?? "",
       decoration: _getDecoration("Name"),
     );
-    _statusDescriptor = TextFieldDescriptor(
+    _descriptionDescriptor = TextFieldDescriptor(
       controller: TextEditingController()
         ..text = widget.entityToUpdate?.description ?? "",
-      decoration: _getDecoration("Status"),
+      decoration: _getDecoration("Description"),
     );
-    _sizeDescriptor = TextFieldDescriptor(
+    _imageDescriptor = TextFieldDescriptor(
       controller: TextEditingController()
-        ..text = widget.entityToUpdate?.units.toString() ?? "",
-      decoration: _getDecoration("Size"),
+        ..text = widget.entityToUpdate?.imageName ?? "",
+      decoration: _getDecoration("Image"),
       numericInput: true,
     );
-    _popScoreDescriptor = TextFieldDescriptor(
+    _categoryDescriptor = TextFieldDescriptor(
+      controller: TextEditingController()
+        ..text = widget.entityToUpdate?.category ?? "",
+      decoration: _getDecoration("Category"),
+      numericInput: true,
+    );
+    _unitsDescriptor = TextFieldDescriptor(
+      controller: TextEditingController()
+        ..text = widget.entityToUpdate?.units.toString() ?? "",
+      decoration: _getDecoration("Units"),
+      numericInput: true,
+    );
+    _priceDescriptor = TextFieldDescriptor(
       controller: TextEditingController()
         ..text = widget.entityToUpdate?.price.toString() ?? "",
-      decoration: _getDecoration("Popularity Score"),
+      decoration: _getDecoration("Price"),
       numericInput: true,
     );
   }
@@ -70,9 +82,11 @@ class _AddEditScreenState extends State<AddEditScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _textFieldFromDescriptor(_nameDescriptor),
-              _textFieldFromDescriptor(_statusDescriptor),
-              _textFieldFromDescriptor(_sizeDescriptor),
-              _textFieldFromDescriptor(_popScoreDescriptor),
+              _textFieldFromDescriptor(_descriptionDescriptor),
+              _textFieldFromDescriptor(_imageDescriptor),
+              _textFieldFromDescriptor(_categoryDescriptor),
+              _textFieldFromDescriptor(_unitsDescriptor),
+              _textFieldFromDescriptor(_priceDescriptor),
             ],
           ),
         ),
@@ -109,14 +123,15 @@ class _AddEditScreenState extends State<AddEditScreen> {
         var plane = Item(
           id: _isInEditMode ? widget.entityToUpdate!.id : null,
           name: _nameDescriptor.controller.text,
-          description: _statusDescriptor.controller.text,
-          units: _sizeDescriptor.controller.text.isNotEmpty
-              ? int.parse(_sizeDescriptor.controller.text)
+          description: _descriptionDescriptor.controller.text,
+          imageName: _imageDescriptor.controller.text,
+          category: _categoryDescriptor.controller.text,
+          units: _unitsDescriptor.controller.text.isNotEmpty
+              ? int.parse(_unitsDescriptor.controller.text)
               : 0,
-          category: widget.userName,
-          price: _popScoreDescriptor.controller.text.isNotEmpty
-              ? int.parse(_popScoreDescriptor.controller.text)
-              : 0,
+          price: _priceDescriptor.controller.text.isNotEmpty
+              ? double.parse(_priceDescriptor.controller.text)
+              : 0.0,
         );
 
         if (_isInEditMode) {
@@ -143,9 +158,9 @@ class _AddEditScreenState extends State<AddEditScreen> {
   void dispose() {
     _subscription?.cancel();
     _nameDescriptor.controller.dispose();
-    _statusDescriptor.controller.dispose();
-    _popScoreDescriptor.controller.dispose();
-    _sizeDescriptor.controller.dispose();
+    _descriptionDescriptor.controller.dispose();
+    _categoryDescriptor.controller.dispose();
+    _imageDescriptor.controller.dispose();
     super.dispose();
   }
 }

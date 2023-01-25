@@ -6,6 +6,8 @@ class AddEditViewModel {
 
   AddEditViewModel(this._repo);
 
-  Stream<String> addEntity(Item entity) => _repo.addEntity(entity);
-  Stream<String> updateEntity(Item entity) => _repo.updateEntity(entity);
+  Stream<String> addEntity(Item item) => _repo.addItem(item);
+
+  Stream<String> updateEntity(Item item) =>
+      Stream.error("functionality not implemented");
 }

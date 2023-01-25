@@ -14,4 +14,3 @@ part 'database.g.dart'; // the generated code will be there
 abstract class AppDatabase extends FloorDatabase {
   EntityDao get entityDao;
 }
-

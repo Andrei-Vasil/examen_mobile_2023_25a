@@ -4,7 +4,7 @@ import 'package:my_albums_flutter/repo/entity_repo.dart';
 import 'package:my_albums_flutter/screens/home/home_screen.dart';
 import 'package:my_albums_flutter/theme/app_colors.dart';
 import 'package:dio/dio.dart' show Dio;
-import './database/database.dart';
+import 'database/database.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
